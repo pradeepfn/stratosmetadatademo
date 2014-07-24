@@ -1,0 +1,26 @@
+#!/bin/bash
+
+log="update_server_conf.log"
+
+pushd /mnt
+
+METADATA_SERVICE_HOST=`sed 's/,/\n/g' /tmp/payload/launch-params | grep METADATA_SERVICE_HOST | cut -d "=" -f 2`
+export METADATA_SERVICE_HOST
+
+echo "Reading mysql ip ..." | tee -a ${log}
+eval $(python /mnt/get_mysql_ip.py)
+echo "MySQL ip found: "${MYSQL_HOST} | tee -a ${log}
+echo "MySQL pwd found: "${MYSQL_PASSWORD} | tee -a ${log}
+
+echo "Setting mysql ip as environment property..." | tee -a ${log}
+export MYSQL_HOST
+export MYSQL_PASSWORD
+echo "SetEnv MYSQL_HOST ${MYSQL_HOST}" > /var/www/.htaccess
+echo "SetEnv MYSQL_PASSWORD ${MYSQL_PASSWORD}">> /var/www/.htaccess
+#echo "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games" > /etc/environment
+#echo "export MYSQL_HOST=${MYSQL_HOST}" >> /etc/environment
+
+
+echo "MySQL ip updated!" | tee -a ${log}
+
+popd

@@ -1,0 +1,29 @@
+import json,urllib2
+import logging
+import subprocess
+import os
+
+logging.basicConfig(filename='example.log',level=logging.DEBUG,format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+def get_metaservice_url():
+  out = os.environ['METADATA_SERVICE_HOST']
+  logging.debug("Meta data service host: %s " % out)
+  return out
+
+my_ip = urllib2.urlopen('http://ip.42.pl/raw').read()
+mysql_password = os.environ['MYSQL_PASSWORD']
+#mysql_username = os.environ['MYSQL_USERNAME']
+# Post data
+data = {"property":[{"name":"MYSQL_IP","value":my_ip},{"name":"MYSQL_PASSWORD","value":mysql_password}]}
+logging.debug("POST payload: %s " % data)
+
+url = "http://" + get_metaservice_url() + ":9773/metadata/" + "12345" 
+logging.debug("Metadata serive url = %s " % url)
+
+req = urllib2.Request(url)
+req.add_header('Content-Type', 'application/json')
+
+response = urllib2.urlopen(req, json.dumps(data))
+
+
+

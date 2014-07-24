@@ -1,0 +1,12 @@
+#!/bin/bash
+
+METADATA_SERVICE_HOST=`sed 's/,/\n/g' /tmp/payload/launch-params | grep METADATA_SERVICE_HOST | cut -d "=" -f 2`
+export METADATA_SERVICE_HOST
+
+MYSQL_USERNAME=`sed 's/,/\n/g' /tmp/payload/launch-params | grep MYSQL_USERNAME | cut -d "=" -f 2`
+export MYSQL_USERNAME
+
+MYSQL_PASSWORD=`sed 's/,/\n/g' /tmp/payload/launch-params | grep MYSQL_PASSWORD | cut -d "=" -f 2`
+export MYSQL_PASSWORD
+
+python /mnt/post.py

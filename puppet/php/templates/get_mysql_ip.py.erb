@@ -1,0 +1,34 @@
+# Get mysql ip from the metadata service.
+
+import urllib2,base64,json
+import subprocess
+import logging
+import os
+
+logging.basicConfig(filename='example.log',level=logging.DEBUG,format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+def get_metaservice_url():
+  out = os.environ['METADATA_SERVICE_HOST']
+  logging.debug("Meta data service host: %s " % out)
+  return out
+
+url = "http://" + get_metaservice_url() + ":9773/metadata/" + "12345"
+logging.debug("Metadata serive url = %s " % url)
+
+request = urllib2.Request(url)
+response = urllib2.urlopen(request).read().decode("utf-8")
+
+logging.debug("Response: %s " % response)
+
+data=json.loads(response)
+logging.debug("mysql IP: %s " % data['property'][0]['value'])
+logging.debug("mysql password: %s " % data['property'][1]['value'])
+
+
+#get MySQL IP
+ip= data['property'][0]['value']
+password = data['property'][1]['value']
+os.environ['MYSQL_HOST'] = ip
+os.environ['MYSQL_PASSWORD'] = password
+print("export MYSQL_HOST=" + ip)
+print("export MYSQL_PASSWORD=" + password)
